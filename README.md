@@ -1,6 +1,6 @@
 # stravaghosts
 
-Visualize your commuting walks as animated "ghost" traces on a map. Pulls GPS data from Strava, filters for weekday morning walks (7–10am, >1h), and generates an HTML visualization you can open in a browser.
+Visualize any recurring Strava activity as animated "ghost" traces racing on a map. Pull GPS data from Strava, filter the activities you care about, and watch them all replay side by side in a browser.
 
 ## Setup
 
@@ -40,6 +40,7 @@ cp .env.example .env
 STRAVA_CLIENT_ID=your_client_id
 STRAVA_CLIENT_SECRET=your_client_secret
 STRAVA_REFRESH_TOKEN=your_refresh_token
+ACTIVITIES_CACHE_TTL_HOURS=24
 ```
 
 ## Usage
@@ -48,16 +49,20 @@ STRAVA_REFRESH_TOKEN=your_refresh_token
 npm start
 ```
 
-This fetches your activities, filters commuting walks, downloads GPS streams, and writes `visualization-data.json`. Open `visualization.html` in a browser to see the result.
+This fetches your activities, filters them, downloads GPS streams, and writes `visualization-data.json`. Open `visualization.html` in a browser to see the result.
 
-API responses are cached in `.cache/` to avoid hitting Strava's rate limits on subsequent runs. To force a fresh fetch:
+The activities list is cached for `ACTIVITIES_CACHE_TTL_HOURS` hours (default 24). Individual GPS track caches are kept indefinitely since they don't change. To force a fresh fetch regardless of TTL:
 
 ```bash
 npm start -- --no-cache
 ```
 
-## What counts as a "commuting walk"
+## Filtering
+
+Edit the `isCommutingWalk` function in `src/index.ts` to match whatever recurring activity you want to visualize. For example, the default filter selects my weekday morning commuting walks:
 
 - Activity type is Walk
 - Duration > 1 hour
 - Started on a weekday between 7:00 and 10:00
+
+You could adapt this to your daily bike commute, weekend long runs, or any other pattern.

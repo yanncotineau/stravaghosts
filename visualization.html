@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<title>Strava Ghosts – Morning Walks</title>
+<title>Strava Ghosts</title>
 <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet" />
 <style>
@@ -171,7 +171,7 @@
     <div class="actual-time" id="clock">07:00:00</div>
     <div class="elapsed" id="elapsed-row">00:00 elapsed</div>
     <div class="stats">
-      <span id="active-count">0</span> walkers &nbsp;·&nbsp;
+      <span id="active-count">0</span> active &nbsp;·&nbsp;
       avg <span id="avg-dist">0.00</span> km
     </div>
   </div>
@@ -230,13 +230,15 @@
   const CENTER_LNG = DATA.centerLng;
 
   document.getElementById('scrubber').max = MAX_ELAPSED;
-  document.getElementById('modal-subtitle').textContent = N + ' morning walks compared';
+  document.getElementById('modal-subtitle').textContent = N + ' activities compared';
 
-  // ── Year colors ──
-  const YEAR_PALETTE = ['#fc4c02', '#e74c3c', '#2ecc71', '#3498db', '#9b59b6', '#f1c40f', '#1abc9c', '#e91e63'];
+  // ── Year colors (dynamically generated) ──
   const uniqueYears = [...new Set(TRACKS.map(t => t.year))].sort();
   const YEAR_COLORS = {};
-  uniqueYears.forEach((y, i) => YEAR_COLORS[y] = YEAR_PALETTE[i % YEAR_PALETTE.length]);
+  uniqueYears.forEach((y, i) => {
+    const hue = (i * 360 / uniqueYears.length + 15) % 360;
+    YEAR_COLORS[y] = 'hsl(' + hue + ', 75%, 55%)';
+  });
   let colorByYear = false;
   const DEFAULT_COLOR = '#fc4c02';
 
@@ -570,7 +572,7 @@
       { label: '😴 Latest start', value: latestStart.label, sub: fmtT(latestStart.startSec) },
       { label: '🏁 First arrival', value: earliestArr.label, sub: fmtT(earliestArr.arrivalSec) },
       { label: '🏁 Last arrival', value: latestArr.label, sub: fmtT(latestArr.arrivalSec) },
-      { label: '📏 Avg distance', value: avgDist.toFixed(2) + ' km', sub: N + ' walks total' },
+      { label: '📏 Avg distance', value: avgDist.toFixed(2) + ' km', sub: N + ' activities total' },
       { label: '⏱ Avg duration', value: fmtT(avgDur), sub: fmtSpd(avgDist / (avgDur / 3600)) + ' avg' },
     ];
     statsEl.innerHTML = cards.map(c =>
